@@ -6,19 +6,24 @@ class ApplicationController < Sinatra::Base
     users.to_json
   end
 
+  get "/trips/:id" do
+    trip = Trip.find(params[:id])
+    trip.to_json
+  end
+
   get "/trips" do
     trips = Trip.all
     trips.to_json
   end
 
   get "/hotels" do
-    hotels = Hotel.all.order(:name)
+    hotels = Hotel.all.order(:name).limit(5)
     hotels.to_json
   end
 
   get "/users/:id" do
     user = User.find(params[:id])
-    userTrips = user.trips
+    userTrips = user.trips.order(:check_in)
     userTrips.to_json(include: :hotel)
   end
 
@@ -55,7 +60,7 @@ class ApplicationController < Sinatra::Base
     trip.update(
       hotel_id: params[:hotel_id]
     )
-    trip.to_json
+    trip.to_json(include: :hotel)
   end
 
   delete '/trips/:id' do

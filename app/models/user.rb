@@ -35,4 +35,15 @@ class User < ActiveRecord::Base
         self.trips.destroy_all
     end
 
+    def find_last_trip_added_by_user(id)
+         user = User.find(id)
+         user.trips.last
+    end
+
+    def find_upcoming_trip_by_user(id)
+        userTrips = User.find(id).trips.order(:check_in)
+        currentDate = Time.new.to_i
+    end
+
+
 end
