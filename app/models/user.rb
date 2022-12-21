@@ -22,10 +22,7 @@ class User < ActiveRecord::Base
         current_date = Time.new.to_i
 
         check_in_to_int = user_trips.map do |trip|
-            year = trip.check_in.year
-            month = trip.check_in.month
-            day = trip.check_in.day
-            trip_date = Time.new(year, month, day).to_i
+            trip_date = trip.check_in.to_time.to_i;
             if (trip_date > current_date)
                 trip.check_in = trip_date
                 trip

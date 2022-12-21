@@ -16,6 +16,7 @@ class ApplicationController < Sinatra::Base
     trips.to_json
   end
 
+  #Find the closest trip to the current date by user ID
   get "/trips/first/:id" do
     first_trip = User.find_upcoming_trip_by_user(params[:id])
     first_trip.to_json(include: :hotel)
