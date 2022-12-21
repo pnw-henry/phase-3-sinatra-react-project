@@ -16,11 +16,17 @@ class ApplicationController < Sinatra::Base
     trips.to_json
   end
 
+  get "/trips/first/:id" do
+    first_trip = User.find_upcoming_trip_by_user(params[:id])
+    first_trip.to_json(include: :hotel)
+  end
+
   get "/hotels" do
     hotels = Hotel.all.order(:name).limit(5)
     hotels.to_json
   end
 
+  #Get trips for specific user ID
   get "/users/:id" do
     user = User.find(params[:id])
     userTrips = user.trips.order(:check_in)

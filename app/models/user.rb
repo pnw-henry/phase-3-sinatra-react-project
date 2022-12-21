@@ -17,6 +17,26 @@ class User < ActiveRecord::Base
         user.destroy
     end
 
+    def self.find_upcoming_trip_by_user(id)
+        user_trips = User.find(id).trips
+        current_date = Time.new.to_i
+
+        check_in_to_int = user_trips.map do |trip|
+            year = trip.check_in.year
+            month = trip.check_in.month
+            day = trip.check_in.day
+            trip_date = Time.new(year, month, day).to_i
+            if (trip_date > current_date)
+                trip.check_in = trip_date
+                trip
+            end
+        end
+
+        first_trip = check_in_to_int.sort_by(&:check_in).first
+        first_trip.check_in = Time.at(first_trip.check_in)
+        first_trip
+    end
+
     def trip_count
         self.trips.count
     end
@@ -39,11 +59,4 @@ class User < ActiveRecord::Base
          user = User.find(id)
          user.trips.last
     end
-
-    def find_upcoming_trip_by_user(id)
-        userTrips = User.find(id).trips.order(:check_in)
-        currentDate = Time.new.to_i
-    end
-
-
 end
