@@ -70,10 +70,16 @@ class ApplicationController < Sinatra::Base
     trip.to_json(include: :hotel)
   end
 
-  delete '/trips/:id' do
+  delete "/trips/:id" do
   trip = Trip.find(params[:id])
   trip.destroy
   trip.to_json
+  end
+
+  get "/practice/:id" do
+    user = User.find(params[:id])
+    trips = user.trips.all.limit(2)
+    trips.to_json(include: {hotel: {include: :users}})
   end
 
 

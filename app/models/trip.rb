@@ -14,6 +14,14 @@ class Trip < ActiveRecord::Base
         Trip.count
     end
 
+    def self.cheapest_trip
+        Trip.all.minimum(:cost)
+    end
+
+    def self.most_expensive_trip
+        Trip.all.maximum(:cost)
+    end
+
     def self.list_first_trip
         Trip.first
     end

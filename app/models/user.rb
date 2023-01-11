@@ -21,6 +21,10 @@ class User < ActiveRecord::Base
         user.destroy
     end
 
+    def self.list_users_by_alpha_order
+        User.all.order(:name)
+    end
+
     def self.find_upcoming_trip_by_user(id)
         user_trips = self.list_user_trips_by_id(id)
         current_date = Time.new.to_i
@@ -43,6 +47,10 @@ class User < ActiveRecord::Base
         sum = 0
         user_trips.map { |trip| sum = trip.cost + sum}
         sum
+    end
+
+    def update_username(username)
+        self.update(username: username)
     end
 
     def trip_count
