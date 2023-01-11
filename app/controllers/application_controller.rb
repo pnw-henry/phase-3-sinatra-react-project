@@ -6,6 +6,11 @@ class ApplicationController < Sinatra::Base
     users.to_json
   end
 
+  get "/currentuser/:id" do
+    user = User.find(params[:id])
+    user.to_json(include: {trips: {include: :hotel}})
+  end
+
   get "/trips/:id" do
     trip = Trip.find(params[:id])
     trip.to_json
