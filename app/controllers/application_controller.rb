@@ -13,8 +13,8 @@ class ApplicationController < Sinatra::Base
   end
 
   #Search for user
-  get "/user/search/:name" do
-    user = User.find_by(name: params[:name])
+  get "/user/search/:username" do
+    user = User.find_by(username: params[:username])
     user.to_json(include: {trips: {include: :hotel}})
   end
 
@@ -34,16 +34,16 @@ class ApplicationController < Sinatra::Base
 
   #New user create
   post "/users" do
-    response = {message: "Username exists!"}
     user = User.find_by(username: params[:username])
     if user.is_a?(User)
-      return response.to_json
+      response = user.username
     else
       new_user = User.create(
       username: params[:username]
     )
-    return new_user.to_json(include: {trips: {include: :hotel}})
+    response = new_user
     end
+    response.to_json
   end
 
   #New trip create
@@ -54,11 +54,10 @@ class ApplicationController < Sinatra::Base
       cost: params[:cost],
       check_in: params[:check_in],
       check_out: params[:check_out],
-      #user_id: params[:user_id],
       hotel_id: params[:hotel_id]
     )
 
-    trip.to_json
+    trip.to_json(include: :hotel)
   end
 
   #New hotel create
