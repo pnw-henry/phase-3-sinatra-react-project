@@ -12,25 +12,13 @@ class ApplicationController < Sinatra::Base
     user.to_json(include: {trips: {include: :hotel}})
   end
 
-  #Get specific trip
-  get "/trips/:id" do
-    trip = Trip.find(params[:id])
-    trip.to_json
+  #Search for user
+  get "/user/search/:name" do
+    user = User.find_by(name: params[:name])
+    user.to_json(include: {trips: {include: :hotel}})
   end
 
-  #Get all trips
-  get "/trips" do
-    trips = Trip.all
-    trips.to_json
-  end
-
-  #Find the closest trip to the current date by user ID
-  get "/trips/first/:id" do
-    first_trip = User.find_upcoming_trip_by_user(params[:id])
-    first_trip.to_json(include: :hotel)
-  end
-
-  #Get all hotels
+  #Get hotels, limit 5
   get "/hotels" do
     hotels = Hotel.all.order(:name).limit(5)
     hotels.to_json
@@ -46,20 +34,27 @@ class ApplicationController < Sinatra::Base
 
   #New user create
   post "/users" do
-    user = User.create(
-      name: params[:name]
+    response = {message: "Username exists!"}
+    user = User.find_by(username: params[:username])
+    if user.is_a?(User)
+      return response.to_json
+    else
+      new_user = User.create(
+      username: params[:username]
     )
-    user.to_json
+    return new_user.to_json(include: {trips: {include: :hotel}})
+    end
   end
 
   #New trip create
   post "/trips" do
-    trip = Trip.create(
+    user = User.find_by(id: params[:user_id])
+    trip = user.trips.create(
       destination: params[:destination],
       cost: params[:cost],
       check_in: params[:check_in],
       check_out: params[:check_out],
-      user_id: params[:user_id],
+      #user_id: params[:user_id],
       hotel_id: params[:hotel_id]
     )
 
@@ -83,7 +78,7 @@ class ApplicationController < Sinatra::Base
     )
     trip.to_json(include: :hotel)
   end
-  
+
   #Delete trip
   delete "/trips/:id" do
   trip = Trip.find(params[:id])
