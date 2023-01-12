@@ -1,16 +1,5 @@
 class ApplicationController < Sinatra::Base
   set :default_content_type, 'application/json'
-  #Get all users
-  get "/users" do
-    users = User.all.order(:name)
-    users.to_json
-  end
-
-  #Get current's user's object with trips and hotels
-  get "/currentuser/:id" do
-    user = User.find(params[:id])
-    user.to_json(include: {trips: {include: :hotel}})
-  end
 
   #Search for user
   get "/user/search/:username" do
@@ -20,30 +9,22 @@ class ApplicationController < Sinatra::Base
 
   #Get hotels, limit 5
   get "/hotels" do
-    hotels = Hotel.all.order(:name).limit(5)
+    hotels = Hotel.all.order(:name).take(5)
     hotels.to_json
-  end
-
-
-  #Get trips for specific user ID
-  get "/users/:id" do
-    user = User.find(params[:id])
-    userTrips = user.trips.order(:check_in)
-    userTrips.to_json(include: :hotel)
   end
 
   #New user create
   post "/users" do
     user = User.find_by(username: params[:username])
     if user.is_a?(User)
-      response = user.username
+      response = user.username.to_json
     else
       new_user = User.create(
       username: params[:username]
     )
-    response = new_user
+    response = new_user.to_json(include: {trips: {include: :hotel}})
     end
-    response.to_json
+    response
   end
 
   #New trip create
